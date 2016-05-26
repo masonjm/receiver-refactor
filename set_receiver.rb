@@ -2,11 +2,12 @@ class SetReceiver < Base
   attr_reader :receiver
 
   def call
-    login
-    find_receiver
-    assign_attributes
-    save
-    logout
+    login do
+      find_receiver do
+        assign_attributes
+        save
+      end
+    end
   end
 
   def assign_attributes
@@ -21,12 +22,13 @@ class SetReceiver < Base
       find("a").click
       find("div", text: "Edit").click
     end
+    yield if block_given?
   end
 
-  def find_receiver
+  def find_receiver(&block)
     search_for_receiver do
-      return edit_receiver if receiver_found?
-      return new_receiver if receiver_not_found?
+      return edit_receiver(&block) if receiver_found?
+      return new_receiver(&block) if receiver_not_found?
       # TODO: Raise error about too many matches
     end
   end
@@ -34,6 +36,7 @@ class SetReceiver < Base
   def new_receiver
     click_link "New Receiver"
     find(".hwType").select(receiver.model)
+    yield if block_given?
   end
 
   def receiver_found?

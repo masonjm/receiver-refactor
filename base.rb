@@ -21,6 +21,8 @@ class Base
     fill_in "Password", with: Rails.configuration.receiver_api[:password]
     click_button "Log In"
     # TODO: raise error if login fails
+    yield if block_given?
+    logout
   end
 
   # Click the Logout link
