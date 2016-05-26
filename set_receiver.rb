@@ -18,6 +18,7 @@ class SetReceiver
     fill_in "User Name", with: Rails.configuration.receiver_api[:username]
     fill_in "Password", with: Rails.configuration.receiver_api[:password]
     click_button "Log In"
+    # TODO: raise error if login fails
   end
 
   def logout
@@ -30,32 +31,28 @@ class SetReceiver
     Capybara.default_driver = :selenium # TODO make this configurable so we can use polgergeist when not developing
   end
 
-  def call(receivers: receiver_devices)
+  attr_accessor :receiver
+
+  def call(receiver:)
+    self.receiver = receiver
     login
-    receivers.each do |receiver|
-      goto_page :receivers_list
+    goto_page :receivers_list
 
-      case find_receiver(receiver)
-      when :found
-        edit_receiver(receiver)
-      when :not_found
-        new_receiver(receiver)
-      else
-        # TODO: Log error about too many matches
-        next
-      end
-
-      assign_attributes(receiver)
-      save
+    case find_receiver
+    when :found
+      edit_receiver
+    when :not_found
+      new_receiver
+    else
+      # TODO: Raise error about too many matches
     end
+
+    assign_attributes
+    save
     logout
   end
 
-  def receiver_devices
-    Receiver.all
-  end
-
-  def assign_attributes(receiver)
+  def assign_attributes
     find("#ctl00_ctl00_ContentPlaceHolder1_ChildContent3__descriptionTextBox").set receiver.notes
     find("#ctl00_ctl00_ContentPlaceHolder1_ChildContent3__serialNumberTextBox").set receiver.serial_number
     # TODO: timezone selection
@@ -69,7 +66,7 @@ class SetReceiver
     end
   end
 
-  def find_receiver(receiver)
+  def find_receiver
     within("#SearchTopRow") do
       select "Serial Number"
     end
@@ -85,7 +82,7 @@ class SetReceiver
     end
   end
 
-  def new_receiver(receiver)
+  def new_receiver
     click_link "New Receiver"
     find(".hwType").select(receiver.model)
   end
