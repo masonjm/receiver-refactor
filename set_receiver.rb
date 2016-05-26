@@ -2,8 +2,16 @@ class SetReceiver
   include Capybara::DSL
   include ServiceCall
 
-  LOGIN_PAGE = "http://#{Rails.configuration.receiver_api[:host]}/int/login.aspx"
-  RECEIVERS_LIST = "http://#{Rails.configuration.receiver_api[:host]}/int/receiverlist.aspx?level=1"
+  PAGE = {
+    login:          "/int/login.aspx",
+    receivers_list: "/int/receiverlist.aspx?level=1",
+  }.map do |name, path|
+    [name, "http://#{Rails.configuration.receiver_api[:host]}#{path}"]
+  end.to_h.with_indifferent_access.freeze
+
+  def goto_page(page)
+    visit(PAGE[page])
+  end
 
   def initialize(*args)
     super
@@ -13,12 +21,12 @@ class SetReceiver
 
   def call(receivers: receiver_devices)
     # login
-    visit LOGIN_PAGE
+    goto_page :login
     fill_in "User Name", with: Rails.configuration.receiver_api[:username]
     fill_in "Password", with: Rails.configuration.receiver_api[:password]
     click_button "Log In"
     receivers.each do |receiver|
-      visit RECEIVERS_LIST
+      goto_page :receivers_list
       # find the receiver
       within("#SearchTopRow") do
         select "Serial Number"
