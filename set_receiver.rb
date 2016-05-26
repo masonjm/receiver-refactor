@@ -55,10 +55,8 @@ class SetReceiver
         next
       end
 
-      find("#ctl00_ctl00_ContentPlaceHolder1_ChildContent3__descriptionTextBox").set receiver.notes
-      find("#ctl00_ctl00_ContentPlaceHolder1_ChildContent3__serialNumberTextBox").set receiver.serial_number
-      # TODO: timezone selection
-      check "Activated"
+      assign_attributes(receiver)
+
       accept_alert do
         click_button "Save"
       end
@@ -68,5 +66,12 @@ class SetReceiver
 
   def receiver_devices
     Receiver.all
+  end
+
+  def assign_attributes(receiver)
+    find("#ctl00_ctl00_ContentPlaceHolder1_ChildContent3__descriptionTextBox").set receiver.notes
+    find("#ctl00_ctl00_ContentPlaceHolder1_ChildContent3__serialNumberTextBox").set receiver.serial_number
+    # TODO: timezone selection
+    check "Activated"
   end
 end
