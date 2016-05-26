@@ -42,11 +42,7 @@ class SetReceiver
       click_button "Search"
 
       if has_content?("1 Item Found")
-        # edit
-        within("td.Info") do
-          find("a").click
-          find("div", text: "Edit").click
-        end
+        edit_receiver(receiver)
       elsif has_content?("No Items Found")
         new_receiver(receiver)
       else
@@ -69,6 +65,13 @@ class SetReceiver
     find("#ctl00_ctl00_ContentPlaceHolder1_ChildContent3__serialNumberTextBox").set receiver.serial_number
     # TODO: timezone selection
     check "Activated"
+  end
+
+  def edit_receiver
+    within("td.Info") do
+      find("a").click
+      find("div", text: "Edit").click
+    end
   end
 
   def new_receiver(receiver)
