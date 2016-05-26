@@ -24,13 +24,9 @@ class SetReceiver < Base
   end
 
   def find_receiver
-    search_for_receiver
-
-    if receiver_found?
-      edit_receiver
-    elsif receiver_not_found?
-      new_receiver
-    else
+    search_for_receiver do
+      return edit_receiver if receiver_found?
+      return new_receiver if receiver_not_found?
       # TODO: Raise error about too many matches
     end
   end
@@ -61,5 +57,6 @@ class SetReceiver < Base
     end
     find("#ctl00_ctl00_ContentPlaceHolder1_SearchTermTextBox1").set receiver.serial_number
     click_button "Search"
+    yield if block_given? # Do stuff with the search results page
   end
 end
