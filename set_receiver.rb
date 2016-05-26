@@ -13,6 +13,17 @@ class SetReceiver
     visit(PAGE[page])
   end
 
+  def login
+    goto_page :login
+    fill_in "User Name", with: Rails.configuration.receiver_api[:username]
+    fill_in "Password", with: Rails.configuration.receiver_api[:password]
+    click_button "Log In"
+  end
+
+  def logout
+    click_link "Logout"
+  end
+
   def initialize(*args)
     super
 
@@ -20,11 +31,7 @@ class SetReceiver
   end
 
   def call(receivers: receiver_devices)
-    # login
-    goto_page :login
-    fill_in "User Name", with: Rails.configuration.receiver_api[:username]
-    fill_in "Password", with: Rails.configuration.receiver_api[:password]
-    click_button "Log In"
+    login
     receivers.each do |receiver|
       goto_page :receivers_list
       # find the receiver
@@ -56,6 +63,7 @@ class SetReceiver
         click_button "Save"
       end
     end
+    logout
   end
 
   def receiver_devices
