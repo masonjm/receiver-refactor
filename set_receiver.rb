@@ -48,8 +48,7 @@ class SetReceiver
           find("div", text: "Edit").click
         end
       elsif has_content?("No Items Found")
-        click_link "New Receiver"
-        find(".hwType").select(receiver.model)
+        new_receiver(receiver)
       else
         # TODO: Log error about too many matches
         next
@@ -70,6 +69,11 @@ class SetReceiver
     find("#ctl00_ctl00_ContentPlaceHolder1_ChildContent3__serialNumberTextBox").set receiver.serial_number
     # TODO: timezone selection
     check "Activated"
+  end
+
+  def new_receiver(receiver)
+    click_link "New Receiver"
+    find(".hwType").select(receiver.model)
   end
 
   def save
