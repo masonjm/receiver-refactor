@@ -3,17 +3,7 @@ class SetReceiver < Base
 
   def call
     login
-    goto_page :receivers_list
-
-    case find_receiver
-    when :found
-      edit_receiver
-    when :not_found
-      new_receiver
-    else
-      # TODO: Raise error about too many matches
-    end
-
+    find_receiver
     assign_attributes
     save
     logout
@@ -37,11 +27,11 @@ class SetReceiver < Base
     search_for_receiver
 
     if has_content?("1 Item Found")
-      :found
+      edit_receiver
     elsif has_content?("No Items Found")
-      :not_found
+      new_receiver
     else
-      :multiple_results
+      # TODO: Raise error about too many matches
     end
   end
 
@@ -57,6 +47,7 @@ class SetReceiver < Base
   end
 
   def search_for_receiver
+    goto_page :receivers_list
     within("#SearchTopRow") do
       select "Serial Number"
     end
