@@ -34,16 +34,11 @@ class SetReceiver
     login
     receivers.each do |receiver|
       goto_page :receivers_list
-      # find the receiver
-      within("#SearchTopRow") do
-        select "Serial Number"
-      end
-      find("#ctl00_ctl00_ContentPlaceHolder1_SearchTermTextBox1").set receiver.serial_number
-      click_button "Search"
 
-      if has_content?("1 Item Found")
+      case find_receiver(receiver)
+      when :found
         edit_receiver(receiver)
-      elsif has_content?("No Items Found")
+      when :not_found
         new_receiver(receiver)
       else
         # TODO: Log error about too many matches
@@ -71,6 +66,22 @@ class SetReceiver
     within("td.Info") do
       find("a").click
       find("div", text: "Edit").click
+    end
+  end
+
+  def find_receiver(receiver)
+    within("#SearchTopRow") do
+      select "Serial Number"
+    end
+    find("#ctl00_ctl00_ContentPlaceHolder1_SearchTermTextBox1").set receiver.serial_number
+    click_button "Search"
+
+    if has_content?("1 Item Found")
+      :found
+    elsif has_content?("No Items Found")
+      :not_found
+    else
+      :multiple_results
     end
   end
 
