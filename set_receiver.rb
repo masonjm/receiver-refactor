@@ -34,11 +34,7 @@ class SetReceiver < Base
   end
 
   def find_receiver
-    within("#SearchTopRow") do
-      select "Serial Number"
-    end
-    find("#ctl00_ctl00_ContentPlaceHolder1_SearchTermTextBox1").set receiver.serial_number
-    click_button "Search"
+    search_for_receiver
 
     if has_content?("1 Item Found")
       :found
@@ -58,5 +54,13 @@ class SetReceiver < Base
     accept_alert do
       click_button "Save"
     end
+  end
+
+  def search_for_receiver
+    within("#SearchTopRow") do
+      select "Serial Number"
+    end
+    find("#ctl00_ctl00_ContentPlaceHolder1_SearchTermTextBox1").set receiver.serial_number
+    click_button "Search"
   end
 end
