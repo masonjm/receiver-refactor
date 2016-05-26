@@ -26,9 +26,9 @@ class SetReceiver < Base
   def find_receiver
     search_for_receiver
 
-    if has_content?("1 Item Found")
+    if receiver_found?
       edit_receiver
-    elsif has_content?("No Items Found")
+    elsif receiver_not_found?
       new_receiver
     else
       # TODO: Raise error about too many matches
@@ -38,6 +38,14 @@ class SetReceiver < Base
   def new_receiver
     click_link "New Receiver"
     find(".hwType").select(receiver.model)
+  end
+
+  def receiver_found?
+    has_content?("1 Item Found")
+  end
+
+  def receiver_not_found?
+    has_content?("No Items Found")
   end
 
   def save
